@@ -1,19 +1,55 @@
-include ${FSLCONFDIR}/default.mk
+# Specify the default compiler
+CXX = g++
 
-PROJNAME = randomise
-XFILES   = randomise fdr unconfound
-SCRIPTS  = design_ttest2 randomise_parallel tfce_support \
-           randomise_combine setup_masks
-LIBS     = -lfsl-newimage -lfsl-miscmaths -lfsl-utils \
-           -lfsl-NewNifti -lfsl-znz -lfsl-cprob
+# Specify the -fpic flag
+CXXFLAGS += -fpic
 
-all: ${XFILES}
+# Define source files
+SRCS = fdr.cc randomise.cc ranopts.cc unconfound.cc
 
-randomise: randomise.o ranopts.o
-	${CXX}  ${CXXFLAGS} -o $@ $^ ${LDFLAGS}
+# Additional LDFLAGS for znzlib library
+#ZNZLIB_LDFLAGS = -L/path/to/your/znzlib -lfsl-znz
+# Additional LDFLAGS for meshclass library
+#MESHCLASS_LDFLAGS = -L/path/to/your/meshclass -lfsl-meshclass
+# Additional LDFLAGS for first_lib library
+#FIRSTLIB_LDFLAGS = -L/path/to/your/first_lib -lfsl-first_lib
 
-unconfound: unconfound.o
-	${CXX}  ${CXXFLAGS} -o $@ $^ ${LDFLAGS}
+# Define object files
+OBJS = $(SRCS:.cc=.o)
 
-fdr: fdr.o
-	${CXX}  ${CXXFLAGS} -o $@ $^ ${LDFLAGS}
+# Define library source files and directories
+LIB_DIRS = newimage miscmaths NewNifti cprob znzlib utils 
+LIB_SRCS = $(foreach dir,$(LIB_DIRS),$(wildcard $(dir)/*.cc))
+LIB_OBJS = $(LIB_SRCS:.cc=.o)
+
+# Define targets
+all: randomise fdr unconfound
+
+# Compile the final executables
+randomise: libraries randomise.o ranopts.o $(LIB_OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ randomise.o ranopts.o $(LIB_OBJS) $(LDFLAGS) -lblas -llapack -lz
+
+unconfound: libraries unconfound.o $(LIB_OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ unconfound.o $(LIB_OBJS) $(LDFLAGS) -lblas -llapack -lz
+
+fdr: libraries fdr.o $(LIB_OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ fdr.o $(LIB_OBJS) $(LDFLAGS) -lblas -llapack -lz
+
+
+# Rule to build object files
+%.o: %.cc
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+# Phony target to build all libraries
+.PHONY: libraries
+libraries:
+	@for dir in $(LIB_DIRS); do \
+	$(MAKE) -C $$dir CXX=$(CXX) CXXFLAGS='$(CXXFLAGS)' LDFLAGS='$(LDFLAGS)'; \
+	done
+
+# Clean rule
+clean:
+	rm -f randomise $(OBJS) $(LIB_OBJS)
