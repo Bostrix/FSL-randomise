@@ -1,0 +1,89 @@
+#!/bin/bash
+set -e
+#   Copyright (C) 2012 University of Oxford
+#
+#   SHCOPYRIGHT
+Usage() {
+  echo "`basename $0` <input matrix> <input contrast> <output basename> <mask1> <mask2> ..."
+  echo " "
+  echo "The list of mask images (<mask1> <mask2> ...) must be from subjects in the same order as used in the design matrix"
+  exit 1
+}
+
+CleanUp() {
+    out=$1
+    rm -f ${out}.mat.txt ${out}.con.txt ${out}.mat.ext ${out}.con.ext ${out}.mat2 ${out}.con2
+}
+
+if [ $# -lt 4 ] ; then Usage; fi
+numsubj=`echo $# - 3 | bc`
+
+dmat=$1
+dcon=$2
+out=$3
+shift
+shift
+shift
+imlist="$@"
+
+CleanUp ${out}
+
+# convert matrices to text format
+$FSLDIR/bin/Vest2Text ${dmat} ${out}.mat.txt
+$FSLDIR/bin/Vest2Text ${dcon} ${out}.con.txt
+# sanity check on size of matrix
+maxrow=`cat ${out}.mat.txt | wc -l`;
+if [ $maxrow != $numsubj ] ; then 
+  echo "ERROR:: design matrix of different size to number of masks specified"
+  exit 2
+fi
+maxcol=`cat ${out}.mat.txt | wc -w`;
+maxcol=`echo $maxcol / $maxrow | bc`;
+echo "MATRIX SIZE IS $maxrow $maxcol"
+
+# MAKE 4D VOXELWISE EVS
+# make base 4D file
+echo $FSLDIR/bin/fslmerge -t $out $imlist
+$FSLDIR/bin/fslmerge -t $out $imlist
+
+subjnum=0;
+vxfopts="$out";
+vxlopts="-`echo $maxcol + 1 | bc`"
+
+# MAKE NEW DESIGN MATRIX
+# build up an identity matrix and zero contrast vector of appropriate sizes
+row=1; 
+while [ $row -le $maxrow ] ; do 
+  col=1; 
+  cs="" ; 
+  zerocon="";
+  while [ $col -le $maxrow ] ; do 
+    if [ $row = $col ] ; then cs="${cs}1 " ; 
+    else cs="${cs}0 " ; fi ; 
+    zerocon="${zerocon} 0"
+    col=`echo $col + 1 | bc`;
+  done ; 
+  echo "$cs" >> ${out}.mat.ext ; 
+  row=`echo $row + 1 | bc` ;
+done
+# form zero contrast vector into a matrix
+ncon=1;
+totcon=`cat ${out}.con.txt | wc -l`;
+while [ $ncon -le $totcon ] ; do
+  echo $zerocon >> ${out}.con.ext
+  ncon=`echo $ncon + 1 | bc`;
+done
+# tack on the matrices made above
+paste ${out}.mat.txt ${out}.mat.ext > ${out}.mat2
+paste ${out}.con.txt ${out}.con.ext > ${out}.con2
+# convert back to vest format
+$FSLDIR/bin/Text2Vest ${out}.mat2 ${out}.mat
+$FSLDIR/bin/Text2Vest ${out}.con2 ${out}.con
+
+# clean up
+CleanUp ${out}
+
+
+echo "Example randomise call:"
+echo "  randomise -i <input> -o <output> -d ${out}.mat -t ${out}.con --vxl=${vxlopts} --vxf=${vxfopts} [other options]"
+
