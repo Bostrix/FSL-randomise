@@ -9,10 +9,6 @@ SRCS = fdr.cc randomise.cc ranopts.cc unconfound.cc
 
 # Additional LDFLAGS for znzlib library
 ZNZLIB_LDFLAGS = -L/path/to/your/znzlib -lfsl-znz
-# Additional LDFLAGS for meshclass library
-#MESHCLASS_LDFLAGS = -L/path/to/your/meshclass -lfsl-meshclass
-# Additional LDFLAGS for first_lib library
-#FIRSTLIB_LDFLAGS = -L/path/to/your/first_lib -lfsl-first_lib
 
 # Define object files
 OBJS = $(SRCS:.cc=.o)
@@ -52,4 +48,8 @@ libraries:
 
 # Clean rule
 clean:
-	rm -f randomise $(OBJS) $(LIB_OBJS)
+# Clean rule
+clean:
+# Clean rule
+clean:
+	rm -f randomise $(OBJS) $(LIB_OBJS) $(shell find . -type f \( -name "*.o" -o -name "*.so" \))
