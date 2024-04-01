@@ -8,7 +8,7 @@ CXXFLAGS += -fpic
 SRCS = fdr.cc randomise.cc ranopts.cc unconfound.cc
 
 # Additional LDFLAGS for znzlib library
-#ZNZLIB_LDFLAGS = -L/path/to/your/znzlib -lfsl-znz
+ZNZLIB_LDFLAGS = -L/home/ubuntu/randomise/znzlib -lfsl-znz
 # Additional LDFLAGS for meshclass library
 #MESHCLASS_LDFLAGS = -L/path/to/your/meshclass -lfsl-meshclass
 # Additional LDFLAGS for first_lib library
@@ -27,13 +27,13 @@ all: randomise fdr unconfound
 
 # Compile the final executables
 randomise: libraries randomise.o ranopts.o $(LIB_OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ randomise.o ranopts.o $(LIB_OBJS) $(LDFLAGS) -lblas -llapack -lz
+	$(CXX) $(CXXFLAGS) -o $@ randomise.o ranopts.o $(LIB_OBJS) $(LDFLAGS) $(ZNZLIB_LDFLAGS) -lblas -llapack -lz
 
 unconfound: libraries unconfound.o $(LIB_OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ unconfound.o $(LIB_OBJS) $(LDFLAGS) -lblas -llapack -lz
+	$(CXX) $(CXXFLAGS) -o $@ unconfound.o $(LIB_OBJS) $(LDFLAGS) $(ZNZLIB_LDFLAGS) -lblas -llapack -lz
 
 fdr: libraries fdr.o $(LIB_OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ fdr.o $(LIB_OBJS) $(LDFLAGS) -lblas -llapack -lz
+	$(CXX) $(CXXFLAGS) -o $@ fdr.o $(LIB_OBJS) $(LDFLAGS) $(ZNZLIB_LDFLAGS) -lblas -llapack -lz
 
 
 # Rule to build object files
