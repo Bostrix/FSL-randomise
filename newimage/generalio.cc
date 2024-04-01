@@ -20,7 +20,11 @@ using namespace NEWMAT;
 using namespace MISCMATHS;
 using namespace NiftiIO;
 using namespace NiftiIO::legacy;
+<<<<<<< HEAD
 #define BUILDSTRING "your_build_string_here"
+=======
+
+>>>>>>> origin/main
 namespace NEWIMAGE {
 
 ////////////////////////////////////////////////////////////////////////////

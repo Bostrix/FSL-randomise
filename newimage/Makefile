@@ -1,5 +1,9 @@
 # A Makefile for the newimage library
+<<<<<<< HEAD
 #include ${FSLCONFDIR}/default.mk
+=======
+include ${FSLCONFDIR}/default.mk
+>>>>>>> origin/main
 
 # Generate a string which describes
 # the newimage version we are compiling
