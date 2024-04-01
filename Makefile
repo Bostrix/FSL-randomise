@@ -8,7 +8,7 @@ CXXFLAGS += -fpic
 SRCS = fdr.cc randomise.cc ranopts.cc unconfound.cc
 
 # Additional LDFLAGS for znzlib library
-ZNZLIB_LDFLAGS = -L/home/ubuntu/randomise/znzlib -lfsl-znz
+ZNZLIB_LDFLAGS = -L/path/to/your/znzlib -lfsl-znz
 # Additional LDFLAGS for meshclass library
 #MESHCLASS_LDFLAGS = -L/path/to/your/meshclass -lfsl-meshclass
 # Additional LDFLAGS for first_lib library
