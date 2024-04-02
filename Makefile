@@ -48,8 +48,4 @@ libraries:
 
 # Clean rule
 clean:
-# Clean rule
-clean:
-# Clean rule
-clean:
-	rm -f randomise $(OBJS) $(LIB_OBJS) $(shell find . -type f \( -name "*.o" -o -name "*.so" \))
+	rm -f randomise fdr unconfound $(OBJS) $(LIB_OBJS) $(shell find . -type f \( -name "*.o" -o -name "*.so" \))
