@@ -40,7 +40,7 @@ Replace `/path/to/your/znzlib` with the actual path to your znzlib directory.
 ## Compiling
 
 Once the dependencies are installed and the makefile is modified, you can proceed with compilation by running:
-```
+```bash
 make
 ```
 
