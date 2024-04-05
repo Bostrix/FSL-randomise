@@ -8,7 +8,7 @@ CXXFLAGS += -fpic
 SRCS = fdr.cc randomise.cc ranopts.cc unconfound.cc
 
 # Additional LDFLAGS for znzlib library
-ZNZLIB_LDFLAGS = -L/path/to/your/znzlib -lfsl-znz
+ZNZLIB_LDFLAGS = -L${HOME}/FSL-randomise/znzlib -lfsl-znz
 
 # Define object files
 OBJS = $(SRCS:.cc=.o)
